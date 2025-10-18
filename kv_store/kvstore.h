@@ -5,8 +5,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #define BUFFER_LENGTH	1024
 typedef int (*RCALLBACK)(int fd);
+
+//#define ENABLE_LOG 0
+
+#ifdef ENABLE_LOG
+#define LOG(_fmt, ...) fprintf(stdout, "[%s: %d]: %s"_fmt,__FILE__, __LINE__, __VAR_ARGS__)
+#else
+#define LOG(_fmt, ...)
+#endif
 
 //fd, buffer, callback
 struct conn_item{
@@ -45,6 +54,8 @@ struct kvs_array_item{
 };
 int kvstore_array_set(char* key, char* value);
 char* kvstore_array_get(char* key);
+int kvstore_array_del(char* key);
+int kvstore_array_mod(char* key, char* value);
 #endif
 
 #endif

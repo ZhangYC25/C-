@@ -89,7 +89,7 @@ void server_reader(void *arg) {
 		ret = recv(fd, item.rbuffer, 1024, 0);
 		if (ret > 0) {
 			if(fd > MAX_CLIENT_NUM) 
-			printf("read from server: %.*s\n", ret, item.rbuffer);
+			LOG("read from server: %.*s\n", ret, item.rbuffer);
 
 			kvstore_request(&item);
 
@@ -125,7 +125,7 @@ void server(void *arg) {
 	bind(fd, (struct sockaddr*)&local, sizeof(struct sockaddr_in));
 
 	listen(fd, 20);
-	printf("listen port : %d\n", port);
+	LOG("listen port : %d\n", port);
 
 	
 	struct timeval tv_begin;
@@ -145,7 +145,7 @@ void server(void *arg) {
 			
 			printf("client fd : %d, time_used: %d\n", cli_fd, time_used);
 		}
-		printf("new client comming\n");
+		LOG("new client comming\n");
 
 		nty_coroutine *read_co;
 		int *arg = malloc(sizeof(int));
