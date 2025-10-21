@@ -417,9 +417,9 @@ void kvstore_rbtree_destory(rbtree *tree) {
 }
 
 
-int kvs_rbtree_set(rbtree *tree, char *key, char *value) {
-
-	rbtree_node *node  = (rbtree_node*)malloc(sizeof(rbtree_node));
+int kvstore_rbtree_set(rbtree *tree, char *key, char *value) {
+	if (key == (void*)0 || value == (void*)0) return -1;
+	rbtree_node *node  = (rbtree_node*)kvstore_malloc(sizeof(rbtree_node));
 	if (!node) return -1;
 
 	node->key = kvstore_malloc(strlen(key) + 1);
@@ -429,24 +429,28 @@ int kvs_rbtree_set(rbtree *tree, char *key, char *value) {
 	}
 	
 	memset(node->key, 0, strlen(key) + 1);
-	strcpy(node->key, key);
-	
+	strncpy(node->key, key, strlen(key) + 1);
+	printf("value size: %d\n",(int)strlen(value));
+	printf("in core dump\n");
+	if (value != NULL) printf("value is not NULL\n");
 	node->value = kvstore_malloc(strlen(value) + 1);
+	printf("out core dump\n");
 	if (node->value == NULL) {
 		kvstore_free(node->key);
 		kvstore_free(node);
 		return -1;
 	}
+	//printf("out coredump\n");
 	memset(node->value, 0, strlen(value) + 1);
 	strcpy((char *)node->value, value);
-
+	printf("create node/n");
 	rbtree_insert(tree, node);
 	tree->count ++;
 
 	return 0;
 }
 
-char* kvs_rbtree_get(rbtree *tree, char *key) {
+char* kvstore_rbtree_get(rbtree *tree, char *key) {
 
 	rbtree_node *node = rbtree_search(tree, key);
 	if (node == tree->nil) {
@@ -458,7 +462,7 @@ char* kvs_rbtree_get(rbtree *tree, char *key) {
 }
 
 
-int kvs_rbtree_delete(rbtree *tree, char *key) {
+int kvstore_rbtree_del(rbtree *tree, char *key) {
 
 	rbtree_node *node = rbtree_search(tree, key);
 	if (node == tree->nil) {
@@ -478,7 +482,7 @@ int kvs_rbtree_delete(rbtree *tree, char *key) {
 }
 
 
-int kvs_rbtree_modify(rbtree *tree, char *key, char *value) {
+int kvstore_rbtree_mod(rbtree *tree, char *key, char *value) {
 
 	rbtree_node *node = rbtree_search(tree, key);
 	if (node == tree->nil) {
@@ -497,20 +501,12 @@ int kvs_rbtree_modify(rbtree *tree, char *key, char *value) {
 	return 0;
 }
 
-int kvs_rbtree_count(rbtree *tree) {
+int kvstore_rbtree_count(rbtree *tree) {
 
 	return tree->count;
-
 }
 
-
 rbtree Tree;
-
-
-
-
-
-
 
 #if 0
 

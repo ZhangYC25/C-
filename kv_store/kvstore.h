@@ -43,6 +43,8 @@ int kvstore_request(struct conn_item* item);
 #define NETWORK_IOURING 2
 
 #define ENABLE_ARRAY_KVENGINE 1
+#define ENABLE_RBTREE_KVENGINE 1
+
 #define ENABLE_NETWORK_SELECT NETWORK_NTYCO
 
 #if ENABLE_ARRAY_KVENGINE
@@ -56,6 +58,23 @@ int kvstore_array_set(char* key, char* value);
 char* kvstore_array_get(char* key);
 int kvstore_array_del(char* key);
 int kvstore_array_mod(char* key, char* value);
+int kvstore_array_count(void);
+#endif
+
+#if ENABLE_RBTREE_KVENGINE
+//rbtree
+typedef struct _rbtree rbtree_t;
+
+extern rbtree_t Tree;
+
+int kvstore_rbtree_create(rbtree_t *tree);
+void kvstore_rbtree_destory(rbtree_t *tree);
+int kvstore_rbtree_set(rbtree_t *tree, char *key, char *value);
+char* kvstore_rbtree_get(rbtree_t *tree, char *key);
+int kvstore_rbtree_del(rbtree_t *tree, char *key);
+int kvstore_rbtree_mod(rbtree_t *tree, char *key, char *value);
+int kvstore_rbtree_count(rbtree_t *tree);
+
 #endif
 
 #endif

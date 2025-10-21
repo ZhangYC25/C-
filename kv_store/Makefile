@@ -2,7 +2,7 @@
 CC = gcc
 
 FLAGS = -I ./Ntyco/core/ -L ./Ntyco/ -lntyco
-SRCS = kvstore.c kvstore_array.c epoll_entry.c ntyco_entry.c
+SRCS = kvstore.c kvstore_array.c epoll_entry.c ntyco_entry.c rbtree.c
 TESTCASE_SRCS = test_qps.c
 TESTCASE = test_qps
 TARGET = kvstore

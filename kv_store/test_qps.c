@@ -82,7 +82,7 @@ void array_testcase_10w(int connfd) { // 10w
 
 }
 
-/*
+
 void rbtree_testcase(int connfd) {
 
 	test_case(connfd, "RSET Name King", "SUCCESS", "SETCase");
@@ -107,7 +107,7 @@ void rbtree_testcase_10w(int connfd) { // 10w
 
 void rbtree_testcase_5w_node(int connfd) {
 
-	int count = 50000;
+	int count = 5;
 	int i = 0;
 
 	for (i = 0;i < count;i ++) {
@@ -141,7 +141,7 @@ void rbtree_testcase_5w_node(int connfd) {
 }
 
 
-
+/*
 void hash_testcase(int connfd) {
 
 	test_case(connfd, "HSET Name King", "SUCCESS", "HSETCase");
@@ -273,7 +273,7 @@ int main(int argc, char *argv[]) {
 		
 		printf("array testcase--> time_used: %d, qps: %d\n", time_used, 600000 * 1000 / time_used);
 	}
-/*
+
 	if (mode & 0x2) { // rbtree
 
 		struct timeval tv_begin;
@@ -291,7 +291,7 @@ int main(int argc, char *argv[]) {
 		printf("rbtree testcase-->  time_used: %d, qps: %d\n", time_used, 200000 * 1000 / time_used);
 	
 	}
-
+/*
 	if (mode & 0x4) { // hash
 
 		struct timeval tv_begin;

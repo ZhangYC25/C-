@@ -11,6 +11,7 @@ int kvstore_array_set(char* key, char* value){
     char* kcopy = kvstore_malloc(strlen(key) + 1); //不要直接用
     if (kcopy == (void*)0) return -1;
     strncpy(kcopy, key, strlen(key) + 1);
+    
     char* vcopy = kvstore_malloc(strlen(value) + 1); //不要直接用
     if (vcopy == (void*)0) {kvstore_free(kcopy); return -1;}
     strncpy(vcopy, value, strlen(value) + 1);
@@ -74,4 +75,8 @@ int kvstore_array_mod(char* key, char* value){
         }
     }
     return i;
+}
+
+int kvstore_array_count(void) {	
+	return array_idx;
 }
