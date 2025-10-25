@@ -33,22 +33,22 @@ void kvstore_free(void* ptr){
 }
 
 #if ENABLE_RBTREE_KVENGINE
-    int rbtree_set(char *key, char *value){
-        return kvstore_rbtree_set(&Tree, key, value);
-    }
-    char* rbtree_get(char *key){
-        return kvstore_rbtree_get(&Tree, key);
-    }
-    int rbtree_del(char *key){
-        return kvstore_rbtree_del(&Tree, key);
-    }
-    int rbtree_mod(char *key, char *value){
-        return kvstore_rbtree_mod(&Tree, key, value);
-    }
+int rbtree_set(char *key, char *value, mempool_t* pool){
+    return kvstore_rbtree_set(&Tree, key, value, pool);
+}
+char* rbtree_get(char *key){
+    return kvstore_rbtree_get(&Tree, key);
+}
+int rbtree_del(char *key, mempool_t* pool){
+    return kvstore_rbtree_del(&Tree, key, pool);
+}
+int rbtree_mod(char *key, char *value){
+    return kvstore_rbtree_mod(&Tree, key, value);
+}
 
-    int rbtree_count(void) {
-	    return kvstore_rbtree_count(&Tree);
-    }
+int rbtree_count(void) {
+	return kvstore_rbtree_count(&Tree);
+}
 
 #endif
 
@@ -64,7 +64,7 @@ int kvstore_split_token(char* msg, char** tokens) {
     return idx;
 }
 
-int kvstore_parser_protocol(struct conn_item* item, char** tokens, int count){
+int kvstore_parser_protocol(struct conn_item* item, char** tokens, int count, mempool_t* pool){
     if (item == NULL || tokens[0] == NULL || count == 0) return -1;
     int cmd = KVS_CMD_START;
     for (cmd = KVS_CMD_START;cmd < KVS_CMD_RCOUNT; cmd++) {
@@ -81,6 +81,7 @@ int kvstore_parser_protocol(struct conn_item* item, char** tokens, int count){
     switch (cmd) {
         case KVS_CMD_SET:
             LOG("set\n");
+            //int ref_set = kvstore_array_set(key, value);
             int ref_set = kvstore_array_set(tokens[1], tokens[2]);
             if (!ref_set) {
                 snprintf(msg, BUFFER_LENGTH, "SUCESS");
@@ -133,8 +134,8 @@ int kvstore_parser_protocol(struct conn_item* item, char** tokens, int count){
         // rbtree
 		case KVS_CMD_RSET: {
             printf("here\n");
-            //int res = rbtree_set(key, value);
-			int res = rbtree_set(tokens[1], tokens[2]);
+            //int res = rbtree_set(key, value, pool);
+			int res = rbtree_set(tokens[1], tokens[2], pool);
 			if (!res) {
 				snprintf(msg, BUFFER_LENGTH, "SUCCESS");
 			} else {
@@ -152,7 +153,7 @@ int kvstore_parser_protocol(struct conn_item* item, char** tokens, int count){
 			break;
 		}
 		case KVS_CMD_RDEL: {
-			int res = rbtree_del(key);
+			int res = rbtree_del(key, pool);
 			if (res < 0) {  // server
 				snprintf(msg, BUFFER_LENGTH, "%s", "ERROR");
 			} else if (res == 0) {
@@ -203,7 +204,10 @@ int kvstore_request(struct conn_item* item){
         LOG("idx: %s\n", tokens[idx]);
     }
 
-    kvstore_parser_protocol(item, tokens, count);
+    mempool_t m;
+    mempool_init(&m, PARTSIZE);
+    
+    kvstore_parser_protocol(item, tokens, count, &m);
     return 0;
 }
 
@@ -215,12 +219,12 @@ int init_kvengine(void){
 
 #if ENABLE_RBTREE_KVENGINE
     return kvstore_rbtree_create(&Tree);
+
 #endif
 }
 
 #if 1
 int main(){
-
     init_kvengine();
 #if (ENABLE_NETWORK_SELECT == NETWORK_EPOLL) 
     epoll_entry();

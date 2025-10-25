@@ -417,32 +417,40 @@ void kvstore_rbtree_destory(rbtree *tree) {
 }
 
 
-int kvstore_rbtree_set(rbtree *tree, char *key, char *value) {
+int kvstore_rbtree_set(rbtree *tree, char *key, char *value, mempool_t* pool) {
 	if (key == (void*)0 || value == (void*)0) return -1;
 	rbtree_node *node  = (rbtree_node*)kvstore_malloc(sizeof(rbtree_node));
+	//rbtree_node *node  = (rbtree_node*)mempool_alloc(pool);
 	if (!node) return -1;
 
-	node->key = kvstore_malloc(strlen(key) + 1);
+	//node->key = kvstore_malloc(strlen(key) + 1);
+	node->key = mempool_alloc(pool);
 	if (node->key == NULL) {
 		kvstore_free(node);
 		return -1;
 	}
-	
-	memset(node->key, 0, strlen(key) + 1);
-	strncpy(node->key, key, strlen(key) + 1);
+	//memset(node->key, 0, strlen(key) + 1);
+	//strncpy(node->key, key, strlen(key) + 1);
+	memset(node->key, 0, PARTSIZE);
+	strncpy(node->key, key, PARTSIZE);
 	printf("value size: %d\n",(int)strlen(value));
-	printf("in core dump\n");
-	if (value != NULL) printf("value is not NULL\n");
-	node->value = kvstore_malloc(strlen(value) + 1);
-	printf("out core dump\n");
+
+	//if (value != NULL) printf("value is not NULL\n");
+	//node->value = kvstore_malloc(strlen(value) + 1);
+	node->value = mempool_alloc(pool);
 	if (node->value == NULL) {
-		kvstore_free(node->key);
+		//kvstore_free(node->key);
+		//kvstore_free(node);
+		mempool_free(pool,node->key);
+		//mempool_free(pool, node);
 		kvstore_free(node);
 		return -1;
 	}
 	//printf("out coredump\n");
-	memset(node->value, 0, strlen(value) + 1);
-	strcpy((char *)node->value, value);
+	//memset(node->value, 0, strlen(key) + 1);
+	//strcpy((char *)node->value, value);
+	memset(node->value, 0, PARTSIZE);
+	strncpy((char *)node->value, value, PARTSIZE);
 	printf("create node/n");
 	rbtree_insert(tree, node);
 	tree->count ++;
@@ -462,7 +470,7 @@ char* kvstore_rbtree_get(rbtree *tree, char *key) {
 }
 
 
-int kvstore_rbtree_del(rbtree *tree, char *key) {
+int kvstore_rbtree_del(rbtree *tree, char *key, mempool_t* pool) {
 
 	rbtree_node *node = rbtree_search(tree, key);
 	if (node == tree->nil) {
@@ -472,8 +480,10 @@ int kvstore_rbtree_del(rbtree *tree, char *key) {
 	rbtree_node *cur = rbtree_delete(tree, node);
 
 	if (!cur) {
-		kvstore_free(cur->key);
-		kvstore_free(cur->value);
+		//kvstore_free(cur->key);
+		//kvstore_free(cur->value);
+		mempool_free(pool, cur->key);
+		mempool_free(pool, cur->value);
 		kvstore_free(cur);
 	}
 	tree->count --;

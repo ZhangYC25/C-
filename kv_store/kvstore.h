@@ -7,6 +7,9 @@
 
 
 #define BUFFER_LENGTH	1024
+#define MEM_PAGE_SIZE 4096
+#define PARTSIZE 16
+
 typedef int (*RCALLBACK)(int fd);
 
 //#define ENABLE_LOG 0
@@ -32,6 +35,18 @@ struct conn_item{
 	} recv_t;
 	RCALLBACK send_callback;
 };
+//内存池
+typedef struct mempool_s {
+    int block_size;     //每个的大小
+    int free_count;     //可分配的数量
+    char* free_ptr;     //下一块在哪里
+    char* mem;          //整块的指针
+} mempool_t;
+
+int mempool_init(mempool_t *m, int size);
+void mempool_destroy(mempool_t* m);
+void* mempool_alloc(mempool_t* m);
+void* mempool_free(mempool_t* m, void *ptr);
 
 int epoll_entry(void);
 int ntyco_entry(void);
@@ -69,9 +84,9 @@ extern rbtree_t Tree;
 
 int kvstore_rbtree_create(rbtree_t *tree);
 void kvstore_rbtree_destory(rbtree_t *tree);
-int kvstore_rbtree_set(rbtree_t *tree, char *key, char *value);
+int kvstore_rbtree_set(rbtree_t *tree, char *key, char *value, mempool_t*);
 char* kvstore_rbtree_get(rbtree_t *tree, char *key);
-int kvstore_rbtree_del(rbtree_t *tree, char *key);
+int kvstore_rbtree_del(rbtree_t *tree, char *key, mempool_t* pool);
 int kvstore_rbtree_mod(rbtree_t *tree, char *key, char *value);
 int kvstore_rbtree_count(rbtree_t *tree);
 
