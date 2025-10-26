@@ -87,13 +87,9 @@ int recv_cb(int fd){
 		return -1;
 	}
 	connlist[fd].rlen += count;
-#if 0
+
 	memcpy(connlist[fd].wbuffer,connlist[fd].rbuffer,connlist[fd].rlen);
 	connlist[fd].wlen = connlist[fd].rlen;
-#else
-	//http_request(&connlist[fd]);
-	//http_response(&connlist[fd]);
-#endif
 	//！！！！！关注读！！！！！
 	set_event(fd, EPOLLOUT, 0);
 	return count;
