@@ -87,7 +87,7 @@ void kvstore_rbtree_destory(rbtree_t *tree);
 int kvstore_rbtree_set(rbtree_t *tree, char *key, char *value, mempool_t*);
 char* kvstore_rbtree_get(rbtree_t *tree, char *key);
 int kvstore_rbtree_del(rbtree_t *tree, char *key, mempool_t* pool);
-int kvstore_rbtree_mod(rbtree_t *tree, char *key, char *value);
+int kvstore_rbtree_mod(rbtree_t *tree, char *key, char *value, mempool_t* pool);
 int kvstore_rbtree_count(rbtree_t *tree);
 
 #endif

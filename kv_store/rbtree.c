@@ -492,7 +492,7 @@ int kvstore_rbtree_del(rbtree *tree, char *key, mempool_t* pool) {
 }
 
 
-int kvstore_rbtree_mod(rbtree *tree, char *key, char *value) {
+int kvstore_rbtree_mod(rbtree *tree, char *key, char *value, mempool_t* pool) {
 
 	rbtree_node *node = rbtree_search(tree, key);
 	if (node == tree->nil) {
@@ -500,13 +500,15 @@ int kvstore_rbtree_mod(rbtree *tree, char *key, char *value) {
 	}
 
 	char *tmp = node->value;
-	kvstore_free(tmp);
-	
-	node->value = kvstore_malloc(strlen(value) + 1);
+	//kvstore_free(tmp);
+	mempool_free(tmp, pool);
+	//node->value = kvstore_malloc(strlen(value) + 1);
+	node->value = mempool_alloc(pool);
+	memset(node->value, 0, PARTSIZE);
 	if (node->value == NULL) {
 		return -1;
 	}
-	strcpy(node->value, value);
+	strncpy(node->value, value, PARTSIZE);
 
 	return 0;
 }

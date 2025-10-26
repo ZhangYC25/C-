@@ -42,8 +42,8 @@ char* rbtree_get(char *key){
 int rbtree_del(char *key, mempool_t* pool){
     return kvstore_rbtree_del(&Tree, key, pool);
 }
-int rbtree_mod(char *key, char *value){
-    return kvstore_rbtree_mod(&Tree, key, value);
+int rbtree_mod(char *key, char *value, mempool_t* pool){
+    return kvstore_rbtree_mod(&Tree, key, value, pool);
 }
 
 int rbtree_count(void) {
@@ -164,7 +164,7 @@ int kvstore_parser_protocol(struct conn_item* item, char** tokens, int count, me
 			break;
 		}
 		case KVS_CMD_RMOD: {
-			int res = rbtree_mod(key, value);
+			int res = rbtree_mod(key, value, pool);
 			if (res < 0) {  // server
 				snprintf(msg, BUFFER_LENGTH, "%s", "ERROR");
 			} else if (res == 0) {
