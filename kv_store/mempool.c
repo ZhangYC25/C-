@@ -84,6 +84,7 @@ void* mempool_free (mempool_t* m, void *ptr) {
     //把 freeptr 重置成当前释放节点
     m -> free_ptr = ptr;
     m -> free_count ++;
+    printf("free\n");
 }
 
 /*

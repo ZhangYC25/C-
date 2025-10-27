@@ -87,10 +87,11 @@ void rbtree_testcase(int connfd) {
 
 	test_case(connfd, "RSET Name King", "SUCCESS", "SETCase");
 	test_case(connfd, "RGET Name", "King", "GETCase");
-	test_case(connfd, "RMOD Name Darren", "SUCCESS", "MODCase");
-	test_case(connfd, "RGET Name", "Darren", "GETCase");
 	test_case(connfd, "RDEL Name", "SUCCESS", "DELCase");
-	test_case(connfd, "RGET Name", "NO EXIST", "GETCase");
+	//test_case(connfd, "RMOD Name Darren", "SUCCESS", "MODCase");
+	//test_case(connfd, "RGET Name", "Darren", "GETCase");
+	//test_case(connfd, "RDEL Name", "SUCCESS", "DELCase");
+	//test_case(connfd, "RGET Name", "NO EXIST", "GETCase");
 
 }
 
@@ -100,12 +101,15 @@ void rbtree_testcase_10w(int connfd) { // 10w
 	int i = 0;
 
 	while (i ++ < count) {
-		array_testcase(connfd);
+		rbtree_testcase(connfd);
+		//if (i%10 == 0 && i != 0) {
+			//printf("ten\n");
+		//}
 	}
 
 }
 
-void rbtree_testcase_5w_node(int connfd) {
+/*void rbtree_testcase_5w_node(int connfd) {
 
 	int count = 50000;
 	int i = 0;
@@ -281,7 +285,7 @@ int main(int argc, char *argv[]) {
 		
 		//rbtree_testcase_10w(connfd);
 		
-		rbtree_testcase_5w_node(connfd);
+		rbtree_testcase_10w(connfd);
 
 		struct timeval tv_end;
 		gettimeofday(&tv_end, NULL);
