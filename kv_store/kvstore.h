@@ -36,14 +36,19 @@ struct conn_item{
 	RCALLBACK send_callback;
 };
 //内存池
+typedef struct mempool_page_s{
+	char* mem;          //整块的指针
+	struct mempool_page_s* next; //下一个页
+} mempool_page_t;
 typedef struct mempool_s {
     int block_size;     //每个的大小
     int free_count;     //可分配的数量
     char* free_ptr;     //下一块在哪里
-    char* mem;          //整块的指针
+	mempool_page_t* pages; //内存池中的第一个页
 } mempool_t;
 
 int mempool_init(mempool_t *m, int size);
+int mempool_expand(mempool_t* m);
 void mempool_destroy(mempool_t* m);
 void* mempool_alloc(mempool_t* m);
 void* mempool_free(mempool_t* m, void *ptr);

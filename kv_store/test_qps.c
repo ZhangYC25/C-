@@ -107,7 +107,7 @@ void rbtree_testcase_10w(int connfd) { // 10w
 
 void rbtree_testcase_5w_node(int connfd) {
 
-	int count = 5;
+	int count = 50000;
 	int i = 0;
 
 	for (i = 0;i < count;i ++) {
@@ -288,7 +288,7 @@ int main(int argc, char *argv[]) {
 
 		int time_used = TIME_SUB_MS(tv_end, tv_begin);
 		
-		printf("rbtree testcase-->  time_used: %d, qps: %d\n", time_used, 200000 * 1000 / time_used);
+		printf("rbtree testcase-->  time_used: %d, qps: %d\n", time_used, 300000 * 1000 / time_used);
 	
 	}
 /*

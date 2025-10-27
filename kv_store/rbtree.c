@@ -433,7 +433,7 @@ int kvstore_rbtree_set(rbtree *tree, char *key, char *value, mempool_t* pool) {
 	//strncpy(node->key, key, strlen(key) + 1);
 	memset(node->key, 0, PARTSIZE);
 	strncpy(node->key, key, PARTSIZE);
-	printf("value size: %d\n",(int)strlen(value));
+	//printf("value size: %d\n",(int)strlen(value));
 
 	//if (value != NULL) printf("value is not NULL\n");
 	//node->value = kvstore_malloc(strlen(value) + 1);
@@ -451,7 +451,7 @@ int kvstore_rbtree_set(rbtree *tree, char *key, char *value, mempool_t* pool) {
 	//strcpy((char *)node->value, value);
 	memset(node->value, 0, PARTSIZE);
 	strncpy((char *)node->value, value, PARTSIZE);
-	printf("create node/n");
+	//printf("create node/n");
 	rbtree_insert(tree, node);
 	tree->count ++;
 

@@ -12,33 +12,64 @@ typedef struct mempool_s {
 */
 
 int mempool_init (mempool_t *m, int size) {
-    if(!m) return -1;
-
-    if (size < 16) size = 16;
+    if (!m) return -1;
+    if (size < 16) size =16;
     m -> block_size = size;
+    m -> free_count = 0;
+    m -> free_ptr = NULL;
+    m -> pages = NULL;
 
-    m -> mem = malloc(MEM_PAGE_SIZE);
-    if (!m -> mem) return -1;
-    m -> free_ptr = m -> mem;
-    m -> free_count = MEM_PAGE_SIZE / size;
+    return mempool_expand(m);
+}
 
-    int i = 0;
-    char* ptr = m -> free_ptr;
-    for (i = 0;i < m -> free_count;i++) {
-        *(char**)ptr = ptr + size;
-        ptr += size;
+int mempool_expand(mempool_t* m){
+    if (!m) return -1;
+    mempool_page_t* page = malloc(sizeof(mempool_page_t));
+    if (!page) return -1;
+    page -> mem = malloc(MEM_PAGE_SIZE);
+    if (!page -> mem) {
+        free(page);
+        return -1;
     }
-    *(char**)ptr = NULL;
+
+    page -> next = m -> pages;
+    m -> pages = page;
+
+    // 3. 将新页内的所有块链接到全局空闲链表
+    char* ptr = page->mem;
+    int blocks_in_page = MEM_PAGE_SIZE / m->block_size;
+
+    for (int i = 0; i < blocks_in_page - 1; i++) {
+        *(char**)ptr = ptr + m->block_size;
+        ptr += m->block_size;
+    }
+    *(char**)ptr = m->free_ptr; // 新页的最后一个块指向原来的空闲链表头
+    m->free_ptr = page->mem; // 更新全局空闲链表头为新页的第一个块
+    m->free_count += blocks_in_page;
+
     return 0;
 }
 
 void mempool_destroy (mempool_t* m) {
-    if (!m || m -> mem) return;
-    free(m -> mem);
+    if (!m) return;
+    mempool_page_t* page = m -> pages;
+    while (page) {
+        mempool_page_t* next = page -> next;
+        free(page -> mem);
+        free(page);
+        page = next;
+    }
+    m -> pages = NULL;
+    m -> free_ptr = NULL;
+    m -> free_count = 0;
 }
 
 void* mempool_alloc (mempool_t* m) {
-    if (!m || m -> free_count == 0) return NULL;
+    if (!m || m -> free_count == 0) {
+        if (mempool_expand(m) != 0) {
+            return NULL; // 扩容失败，分配失败
+        }
+    }
     //开辟一个地址即freeptr指向的地址
     void* ptr = m -> free_ptr;
     //把 该地址存储 的下一个 内存地址 重新赋值给 freeptr
