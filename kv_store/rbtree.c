@@ -482,7 +482,7 @@ int kvstore_rbtree_del(rbtree *tree, char *key, mempool_t* pool) {
 	if (cur) {
 		//kvstore_free(cur->key);
 		//kvstore_free(cur->value);
-		if (cur->key != NULL) mempool_free(pool, cur->key);
+		mempool_free(pool, cur->key);
 		//printf("rbmemfree\n");
 		mempool_free(pool, cur->value);
 		//printf("rbmemfree\n");
@@ -496,12 +496,14 @@ int kvstore_rbtree_del(rbtree *tree, char *key, mempool_t* pool) {
 
 int kvstore_rbtree_mod(rbtree *tree, char *key, char *value, mempool_t* pool) {
 
-	rbtree_node *node = rbtree_search(tree, key);
-	if (node == tree->nil) {
-		return -1;
-	}
+	//rbtree_node *node = rbtree_search(tree, key);
+	//if (node == tree->nil) {
+		//return -1;
+	//}
+	kvstore_rbtree_del(tree, key, pool);
+	kvstore_rbtree_set(tree, key, value, pool);
 
-	char *tmp = node->value;
+	/*char *tmp = node->value;
 	//kvstore_free(tmp);
 	mempool_free(pool, tmp);
 	//printf("freesuccess\n");
@@ -511,7 +513,7 @@ int kvstore_rbtree_mod(rbtree *tree, char *key, char *value, mempool_t* pool) {
 	if (node->value == NULL) {
 		return -1;
 	}
-	strncpy(node->value, value, PARTSIZE);
+	strncpy(node->value, value, PARTSIZE);*/
 
 	return 0;
 }
