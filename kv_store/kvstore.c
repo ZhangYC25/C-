@@ -82,7 +82,7 @@ int kvstore_parser_protocol(struct conn_item* item, char** tokens, int count, me
         case KVS_CMD_SET:
             LOG("set\n");
             //int ref_set = kvstore_array_set(key, value);
-            int ref_set = kvstore_array_set(tokens[1], tokens[2]);
+            int ref_set = kvstore_array_set(tokens[1], tokens[2], pool);
             if (!ref_set) {
                 snprintf(msg, BUFFER_LENGTH, "SUCESS");
             } else {
@@ -99,7 +99,7 @@ int kvstore_parser_protocol(struct conn_item* item, char** tokens, int count, me
             }
             break;
         case KVS_CMD_DEL:
-            int ref_del = kvstore_array_del(tokens[1]);
+            int ref_del = kvstore_array_del(tokens[1], pool);
             if (ref_del < 0) {
                 snprintf(msg, BUFFER_LENGTH, "%s", "ERROR");
             } else if(ref_del == 0) {
@@ -110,7 +110,7 @@ int kvstore_parser_protocol(struct conn_item* item, char** tokens, int count, me
             LOG("del\n");
             break;
         case KVS_CMD_MOD:
-            int ref_mod = kvstore_array_mod(tokens[1],tokens[2]);
+            int ref_mod = kvstore_array_mod(tokens[1],tokens[2], pool);
             if (ref_mod < 0) {
                 snprintf(msg, BUFFER_LENGTH, "%s", "ERROR");
             } else if(ref_mod == 0) {

@@ -74,10 +74,10 @@ struct kvs_array_item{
     char* key;
     char* value;
 };
-int kvstore_array_set(char* key, char* value);
+int kvstore_array_set(char* key, char* value, mempool_t* pool);
 char* kvstore_array_get(char* key);
-int kvstore_array_del(char* key);
-int kvstore_array_mod(char* key, char* value);
+int kvstore_array_del(char* key, mempool_t* pool);
+int kvstore_array_mod(char* key, char* value, mempool_t* pool);
 int kvstore_array_count(void);
 #endif
 

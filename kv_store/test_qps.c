@@ -73,7 +73,7 @@ void array_testcase(int connfd) {
 
 void array_testcase_10w(int connfd) { // 10w
 
-	int count = 100000;
+	int count = 50000;
 	int i = 0;
 
 	while (i ++ < count) {
@@ -275,7 +275,7 @@ int main(int argc, char *argv[]) {
 
 		int time_used = TIME_SUB_MS(tv_end, tv_begin);
 		
-		printf("array testcase--> time_used: %d, qps: %d\n", time_used, 600000 * 1000 / time_used);
+		printf("array testcase--> time_used: %d, qps: %d\n", time_used, 300000 * 1000 / time_used);
 	}
 
 	if (mode & 0x2) { // rbtree

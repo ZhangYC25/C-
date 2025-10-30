@@ -5,15 +5,17 @@
 struct kvs_array_item array_table[KVS_ARRAY_SIZE] = {0};
 int array_idx = 0;
 
-int kvstore_array_set(char* key, char* value){
+int kvstore_array_set(char* key, char* value, mempool_t* pool){
     if (key == (void*)0 || value == (void*)0 || array_idx == KVS_ARRAY_SIZE) return -1;
 
-    char* kcopy = kvstore_malloc(strlen(key) + 1); //不要直接用
+    //char* kcopy = kvstore_malloc(strlen(key) + 1);
+    char* kcopy = mempool_alloc(pool);
     if (kcopy == (void*)0) return -1;
     strncpy(kcopy, key, strlen(key) + 1);
     
-    char* vcopy = kvstore_malloc(strlen(value) + 1); //不要直接用
-    if (vcopy == (void*)0) {kvstore_free(kcopy); return -1;}
+    //char* vcopy = kvstore_malloc(strlen(value) + 1); //不要直接用
+    char* vcopy = mempool_alloc(pool);
+    if (vcopy == (void*)0) {mempool_free(pool, kcopy); return -1;}
     strncpy(vcopy, value, strlen(value) + 1);
 
     int i = 0;
@@ -45,14 +47,14 @@ char* kvstore_array_get(char* key){
     return (void*)0;
 }
 
-int kvstore_array_del(char* key){
+int kvstore_array_del(char* key, mempool_t* pool){
         int i = 0;
     for (i = 0; i < array_idx; i++) {
         if (strcmp(array_table[i].key, key) == 0) {
-            kvstore_free(array_table[i].key);
+            mempool_free(pool, array_table[i].key);
             array_table[i].key = NULL;
 
-            kvstore_free(array_table[i].value);
+            mempool_free(pool, array_table[i].value);
             array_table[i].value = NULL;
             array_idx--;
             return 0;
@@ -61,14 +63,14 @@ int kvstore_array_del(char* key){
     return i;
 }
 
-int kvstore_array_mod(char* key, char* value){
+int kvstore_array_mod(char* key, char* value, mempool_t* pool){
     if (key == (void*)0 || value == (void*)0 || array_idx == KVS_ARRAY_SIZE) return -1;
     int i = 0;
     for (i = 0;i < array_idx;i++){
         if(strcmp(array_table[i].key, key) == 0) {
-            kvstore_free(array_table[i].value);
+            mempool_free(pool, array_table[i].value);
 
-            char* vcopy = kvstore_malloc(strlen(value) + 1);
+            char* vcopy = mempool_alloc(pool);
             strncpy(vcopy, value, strlen(value) + 1);
             array_table[i].value = vcopy;
             return 0;
